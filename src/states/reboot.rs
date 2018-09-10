@@ -14,8 +14,10 @@ pub struct Reboot {}
 create_state_step!(Reboot => Idle);
 
 impl StateChangeImpl for State<Reboot> {
-    // FIXME: When adding state-chance hooks, we need to go to Idle if
-    // cancelled.
+    fn callback_state_name(&self) -> Option<&'static str> {
+        Some("reboot")
+    }
+
     fn handle(self) -> Result<StateMachine> {
         info!("Triggering reboot");
         let output = easy_process::run("reboot")?;

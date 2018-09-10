@@ -21,6 +21,10 @@ create_state_step!(Download => Idle);
 create_state_step!(Download => Install(update_package));
 
 impl StateChangeImpl for State<Download> {
+    fn callback_state_name(&self) -> Option<&'static str> {
+        Some("download")
+    }
+
     fn handle(self) -> Result<StateMachine> {
         let installation_set = installation_set::inactive()?;
 

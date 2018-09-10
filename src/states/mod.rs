@@ -29,6 +29,7 @@ mod park;
 mod poll;
 mod probe;
 mod reboot;
+mod transition;
 
 use Result;
 
@@ -43,6 +44,10 @@ use settings::Settings;
 
 pub trait StateChangeImpl {
     fn handle(self) -> Result<StateMachine>;
+
+    fn callback_state_name(&self) -> Option<&'static str> {
+        None
+    }
 }
 
 /// Holds the `State` type and common data, which is available for
@@ -63,6 +68,34 @@ where
 
     /// State type with specific data and methods.
     state: S,
+}
+
+impl<S> State<S>
+where
+    State<S>: StateChangeImpl,
+{
+    fn handle_callbacks(self) -> Result<StateMachine> {
+        use states::transition::{state_change_callback, Transition};
+
+        // FIXME: Remove this clone
+        let firmware_path = &self.settings.firmware.metadata_path.clone();
+
+        let callback = self.callback_state_name();
+
+        let next_state = self.handle()?;
+
+        if let Some(callback_name) = callback {
+            match state_change_callback(firmware_path, callback_name) {
+                Ok(Transition::Continue) => Ok(next_state),
+                Ok(Transition::Cancel) => Ok(next_state.into_idle()),
+
+                // FIXME: treat this error
+                Err(e) => panic!("{}", e),
+            }
+        } else {
+            Ok(next_state)
+        }
+    }
 }
 
 /// The struct representing the state machine.
@@ -115,15 +148,36 @@ impl StateMachine {
         }
     }
 
+    // FIXME: turn this into a macro that calls inner methods
     fn move_to_next_state(self) -> Result<StateMachine> {
         match self {
-            StateMachine::Park(s) => Ok(s.handle()?),
-            StateMachine::Idle(s) => Ok(s.handle()?),
-            StateMachine::Poll(s) => Ok(s.handle()?),
-            StateMachine::Probe(s) => Ok(s.handle()?),
-            StateMachine::Download(s) => Ok(s.handle()?),
-            StateMachine::Install(s) => Ok(s.handle()?),
-            StateMachine::Reboot(s) => Ok(s.handle()?),
+            StateMachine::Park(s) => Ok(s.handle_callbacks()?),
+            StateMachine::Idle(s) => Ok(s.handle_callbacks()?),
+            StateMachine::Poll(s) => Ok(s.handle_callbacks()?),
+            StateMachine::Probe(s) => Ok(s.handle_callbacks()?),
+            StateMachine::Download(s) => Ok(s.handle_callbacks()?),
+            StateMachine::Install(s) => Ok(s.handle_callbacks()?),
+            StateMachine::Reboot(s) => Ok(s.handle_callbacks()?),
         }
+    }
+
+    // FIXME: turn this into a macro that calls inner methods
+    fn into_idle(self) -> StateMachine {
+        let (settings, runtime_settings, firmware) = match self {
+            StateMachine::Park(s) => (s.settings, s.runtime_settings, s.firmware),
+            StateMachine::Idle(s) => (s.settings, s.runtime_settings, s.firmware),
+            StateMachine::Poll(s) => (s.settings, s.runtime_settings, s.firmware),
+            StateMachine::Probe(s) => (s.settings, s.runtime_settings, s.firmware),
+            StateMachine::Download(s) => (s.settings, s.runtime_settings, s.firmware),
+            StateMachine::Install(s) => (s.settings, s.runtime_settings, s.firmware),
+            StateMachine::Reboot(s) => (s.settings, s.runtime_settings, s.firmware),
+        };
+
+        StateMachine::Idle(State::<Idle> {
+            settings: settings,
+            runtime_settings: runtime_settings,
+            firmware: firmware,
+            state: Idle {},
+        })
     }
 }

@@ -18,8 +18,10 @@ create_state_step!(Install => Idle);
 create_state_step!(Install => Reboot);
 
 impl StateChangeImpl for State<Install> {
-    // FIXME: When adding state-chance hooks, we need to go to Idle if
-    // cancelled.
+    fn callback_state_name(&self) -> Option<&'static str> {
+        Some("install")
+    }
+
     fn handle(mut self) -> Result<StateMachine> {
         let package_uid = self.state.update_package.package_uid();
         info!("Installing update: {}", &package_uid);
