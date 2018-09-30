@@ -4,6 +4,8 @@
 
 use Result;
 
+use client::Api;
+use firmware::Metadata;
 use states::{Idle, Reboot, State, StateChangeImpl, StateMachine, TransitionCallback};
 use update_package::UpdatePackage;
 
@@ -20,22 +22,52 @@ impl TransitionCallback for State<Install> {
         "install"
     }
 }
+fn report_state_handler_progress<F>(
+    server: &str,
+    enter_state: &str,
+    leave_state: &str,
+    firmware: &Metadata,
+    package_uid: &str,
+    mut handler: F,
+) -> Result<()>
+where
+    F: FnMut() -> Result<()>,
+{
+    Api::new(server).report(enter_state, firmware, package_uid, None, None)?;
+
+    handler()?;
+
+    Api::new(server).report(leave_state, firmware, package_uid, None, None)?;
+
+    Ok(())
+}
 
 impl StateChangeImpl for State<Install> {
     fn handle(mut self) -> Result<StateMachine> {
         let package_uid = self.state.update_package.package_uid();
         info!("Installing update: {}", &package_uid);
 
-        // FIXME: Check if A/B install
-        // FIXME: Check InstallIfDifferent
+        report_state_handler_progress(
+            &self.settings.network.server_address,
+            "installing",
+            "installed",
+            &self.firmware,
+            &package_uid,
+            || -> Result<()> {
+                // FIXME: Check if A/B install
+                // FIXME: Check InstallIfDifferent
 
-        // Ensure we do a probe as soon as possible so full update
-        // cycle can be finished.
-        self.runtime_settings.force_poll()?;
+                // Ensure we do a probe as soon as possible so full update
+                // cycle can be finished.
+                self.runtime_settings.force_poll()?;
 
-        // Avoid installing same package twice.
-        self.runtime_settings
-            .set_applied_package_uid(&package_uid)?;
+                // Avoid installing same package twice.
+                self.runtime_settings
+                    .set_applied_package_uid(&package_uid)?;
+
+                Ok(())
+            },
+        )?;
 
         info!("Update installed successfully");
         Ok(StateMachine::Reboot(self.into()))
