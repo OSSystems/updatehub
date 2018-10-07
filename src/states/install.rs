@@ -4,9 +4,10 @@
 
 use Result;
 
-use client::Api;
-use firmware::Metadata;
-use states::{Idle, Reboot, State, StateChangeImpl, StateMachine, TransitionCallback};
+use states::{
+    report_state_handler_progress, Idle, Reboot, State, StateChangeImpl, StateMachine,
+    TransitionCallback,
+};
 use update_package::UpdatePackage;
 
 #[derive(Debug, PartialEq)]
@@ -21,34 +22,6 @@ impl TransitionCallback for State<Install> {
     fn callback_state_name(&self) -> &'static str {
         "install"
     }
-}
-
-fn report_state_handler_progress<S, F>(
-    state: &State<S>,
-    enter_state: &str,
-    leave_state: &str,
-    package_uid: &str,
-    mut handler: F,
-) -> Result<()>
-where
-    State<S>: StateChangeImpl,
-    F: FnMut() -> Result<()>,
-{
-    let api = Api::new(&state.settings.network.server_address);
-
-    api.report(enter_state, &state.firmware, package_uid, None, None)?;
-    handler().or_else(|e| {
-        api.report(
-            "error",
-            &state.firmware,
-            package_uid,
-            Some(enter_state),
-            Some(&e.to_string()),
-        )
-    })?;
-    api.report(leave_state, &state.firmware, package_uid, None, None)?;
-
-    Ok(())
 }
 
 impl StateChangeImpl for State<Install> {
