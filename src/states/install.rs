@@ -4,10 +4,7 @@
 
 use Result;
 
-use states::{
-    report_state_handler_progress, Idle, Reboot, State, StateChangeImpl, StateMachine,
-    TransitionCallback,
-};
+use states::{Idle, Reboot, State, StateChangeImpl, StateMachine, TransitionCallback};
 use update_package::UpdatePackage;
 
 #[derive(Debug, PartialEq)]
@@ -25,33 +22,41 @@ impl TransitionCallback for State<Install> {
 }
 
 impl StateChangeImpl for State<Install> {
-    fn handle(mut self) -> Result<StateMachine> {
-        let package_uid = self.state.update_package.package_uid();
-        info!("Installing update: {}", &package_uid);
+    type Inner = Install;
 
-        report_state_handler_progress(
-            &self,
-            "installing",
-            "installed",
-            &package_uid,
-            || -> Result<()> {
-                // FIXME: Check if A/B install
-                // FIXME: Check InstallIfDifferent
+    const ENTER_STATE: &'static str = "installing";
+    const LEAVE_STATE: &'static str = "installed";
 
-                // Ensure we do a probe as soon as possible so full update
-                // cycle can be finished.
-                self.runtime_settings.force_poll()?;
+    fn package_uid(&self) -> &str {
+        self.state.update_package.package_uid()
+    }
 
-                // Avoid installing same package twice.
-                self.runtime_settings
-                    .set_applied_package_uid(&package_uid)?;
+    fn state(&self) -> &State<Self::Inner> {
+        self
+    }
 
-                Ok(())
-            },
-        )?;
+    fn pre_handle(&mut self) {
+        info!("Installing update: {}", self.package_uid());
+    }
 
+    fn handle_impl(&mut self) -> Result<()> {
+        // FIXME: Check if A/B install
+        // FIXME: Check InstallIfDifferent
+
+        // Ensure we do a probe as soon as possible so full update
+        // cycle can be finished.
+        self.runtime_settings.force_poll()?;
+
+        // Avoid installing same package twice.
+        self.runtime_settings
+            .set_applied_package_uid(self.package_uid())?;
+
+        Ok(())
+    }
+
+    fn post_handle(self) -> StateMachine {
         info!("Update installed successfully");
-        Ok(StateMachine::Reboot(self.into()))
+        StateMachine::Reboot(self.into())
     }
 }
 

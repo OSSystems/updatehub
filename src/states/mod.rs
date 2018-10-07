@@ -24,8 +24,58 @@ use firmware::Metadata;
 use runtime_settings::RuntimeSettings;
 use settings::Settings;
 
-trait StateChangeImpl {
-    fn handle(self) -> Result<StateMachine>;
+trait StateChangeImpl
+where
+    State<Self::Inner>: StateChangeImpl<Inner = Self::Inner>,
+{
+    const ENTER_STATE: &'static str;
+    const LEAVE_STATE: &'static str;
+
+    type Inner;
+
+    fn package_uid(&self) -> &str;
+
+    fn state(&self) -> &State<Self::Inner>;
+
+    fn pre_handle(&mut self) {}
+
+    fn handle_impl(&mut self) -> Result<()>;
+
+    fn post_handle(self) -> StateMachine;
+
+    fn handle(self) -> Result<StateMachine> {
+        use client::Api;
+
+        self.pre_handle();
+
+        Api::new(&self.state().settings.network.server_address).report(
+            Self::ENTER_STATE,
+            &self.state().firmware,
+            self.package_uid(),
+            None,
+            None,
+        )?;
+
+        self.handle_impl().or_else(|e| {
+            Api::new(&self.state().settings.network.server_address).report(
+                "error",
+                &self.state().firmware,
+                self.package_uid(),
+                Some(Self::ENTER_STATE),
+                Some(&e.to_string()),
+            )?;
+        })?;
+
+        Api::new(&self.state().settings.network.server_address).report(
+            Self::LEAVE_STATE,
+            &self.state().firmware,
+            self.package_uid(),
+            None,
+            None,
+        )?;
+
+        Ok(self.post_handle())
+    }
 }
 
 trait TransitionCallback: Into<State<Idle>> {
@@ -35,7 +85,7 @@ trait TransitionCallback: Into<State<Idle>> {
 #[derive(Debug, PartialEq)]
 struct State<S>
 where
-    State<S>: StateChangeImpl,
+    State<S>: StateChangeImpl<Inner = S>,
 {
     settings: Settings,
     runtime_settings: RuntimeSettings,
@@ -56,7 +106,7 @@ enum StateMachine {
 
 impl<S> State<S>
 where
-    State<S>: TransitionCallback + StateChangeImpl,
+    State<S>: TransitionCallback + StateChangeImpl<Inner = S>,
 {
     fn handle_with_callback(self) -> Result<StateMachine> {
         use states::transition::{state_change_callback, Transition};
@@ -71,36 +121,6 @@ where
             Transition::Cancel => Ok(StateMachine::Idle(self.into())),
         }
     }
-}
-
-fn report_state_handler_progress<S, F>(
-    state: &State<S>,
-    enter_state: &str,
-    leave_state: &str,
-    package_uid: &str,
-    mut handler: F,
-) -> Result<()>
-where
-    State<S>: StateChangeImpl,
-    F: FnMut() -> Result<()>,
-{
-    use client;
-
-    let api = client::Api::new(&state.settings.network.server_address);
-
-    api.report(enter_state, &state.firmware, package_uid, None, None)?;
-    handler().or_else(|e| {
-        api.report(
-            "error",
-            &state.firmware,
-            package_uid,
-            Some(enter_state),
-            Some(&e.to_string()),
-        )
-    })?;
-    api.report(leave_state, &state.firmware, package_uid, None, None)?;
-
-    Ok(())
 }
 
 impl StateMachine {
