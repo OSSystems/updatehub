@@ -22,10 +22,24 @@ impl TransitionCallback for State<Install> {
 }
 
 impl StateChangeImpl for State<Install> {
-    fn handle(mut self) -> Result<StateMachine> {
-        let package_uid = self.state.update_package.package_uid();
-        info!("Installing update: {}", &package_uid);
+    type Inner = Install;
 
+    const ENTER_STATE: &'static str = "installing";
+    const LEAVE_STATE: &'static str = "installed";
+
+    fn package_uid(&self) -> &str {
+        self.state.update_package.package_uid()
+    }
+
+    fn state(&self) -> &State<Self::Inner> {
+        self
+    }
+
+    fn pre_handle(&mut self) {
+        info!("Installing update: {}", self.package_uid());
+    }
+
+    fn handle_impl(&mut self) -> Result<()> {
         // FIXME: Check if A/B install
         // FIXME: Check InstallIfDifferent
 
@@ -35,10 +49,14 @@ impl StateChangeImpl for State<Install> {
 
         // Avoid installing same package twice.
         self.runtime_settings
-            .set_applied_package_uid(&package_uid)?;
+            .set_applied_package_uid(self.package_uid())?;
 
+        Ok(())
+    }
+
+    fn post_handle(self) -> StateMachine {
         info!("Update installed successfully");
-        Ok(StateMachine::Reboot(self.into()))
+        StateMachine::Reboot(self.into())
     }
 }
 
