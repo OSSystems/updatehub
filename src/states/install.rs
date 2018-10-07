@@ -22,22 +22,23 @@ impl TransitionCallback for State<Install> {
         "install"
     }
 }
-fn report_state_handler_progress<F>(
-    server: &str,
+
+fn report_state_handler_progress<S, F>(
+    state: &State<S>,
     enter_state: &str,
     leave_state: &str,
-    firmware: &Metadata,
     package_uid: &str,
     mut handler: F,
 ) -> Result<()>
 where
+    State<S>: StateChangeImpl,
     F: FnMut() -> Result<()>,
 {
-    Api::new(server).report(enter_state, firmware, package_uid, None, None)?;
+    let api = Api::new(&state.settings.network.server_address);
 
+    api.report(enter_state, &state.firmware, package_uid, None, None)?;
     handler()?;
-
-    Api::new(server).report(leave_state, firmware, package_uid, None, None)?;
+    api.report(leave_state, &state.firmware, package_uid, None, None)?;
 
     Ok(())
 }
@@ -48,10 +49,9 @@ impl StateChangeImpl for State<Install> {
         info!("Installing update: {}", &package_uid);
 
         report_state_handler_progress(
-            &self.settings.network.server_address,
+            &self,
             "installing",
             "installed",
-            &self.firmware,
             &package_uid,
             || -> Result<()> {
                 // FIXME: Check if A/B install
