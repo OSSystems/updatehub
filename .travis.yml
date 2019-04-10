@@ -1,4 +1,4 @@
-sudo: required
+sudo: true
 language: rust
 cache: cargo
 rust:
@@ -29,6 +29,7 @@ script:
     cargo check --tests &&
     cargo build --tests &&
     cargo test &&
+    cargo test -- --ignored &&
     cargo doc &&
     cargo clippy --tests
 after_success:
