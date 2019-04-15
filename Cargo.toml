@@ -11,7 +11,7 @@ edition = "2018"
 
 [dependencies]
 actix-web = "0.7"
-actix = "0.7"
+actix = "0.8"
 chrono = { version = "0.4", features = ["serde"] }
 crypto-hash = "0.3"
 easy_process = "0.1"
