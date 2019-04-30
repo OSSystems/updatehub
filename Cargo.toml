@@ -45,7 +45,7 @@ codegen-units = 1
 panic = 'abort'
 
 [build-dependencies]
-git-version = "0.2"
+git-version = "0.3"
 
 [dev-dependencies]
 loopdev = "0.2"
