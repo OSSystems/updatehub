@@ -55,3 +55,9 @@ loopdev = "0.2"
 mockito = "0.23"
 pretty_assertions = "0.6"
 tempfile = "3"
+
+[target.armv5te-unknown-linux-gnueabi.dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+
+[target.armv7-unknown-linux-gnueabihf.dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
