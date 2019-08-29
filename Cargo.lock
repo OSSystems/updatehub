@@ -657,7 +657,7 @@ dependencies = [
 
 [[package]]
 name = "derivative"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2565,7 +2565,7 @@ dependencies = [
  "chrono 0.4.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "compress-tools 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "crypto-hash 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "easy_process 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2822,7 +2822,7 @@ dependencies = [
 "checksum crossbeam-utils 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "04973fa96e96579258a5091af6003abde64af786b860f18622b82e026cca60e6"
 "checksum crypto-hash 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "8a77162240fd97248d19a564a565eb563a3f592b386e4136fb300909e67dddca"
 "checksum ctor 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)" = "5b6b2f4752cc29efbfd03474c532ce8f916f2d44ec5bb8c21f93bc76e5365528"
-"checksum derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6073e9676dbebdddeabaeb63e3b7cefd23c86f5c41d381ee1237cc77b1079898"
+"checksum derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "942ca430eef7a3806595a6737bc388bf51adb888d3fc0dd1b50f1c170167ee3a"
 "checksum derive_more 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)" = "6d944ac6003ed268757ef1ee686753b57efc5fcf0ebe7b64c9fc81e7e32ff839"
 "checksum derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7a141330240c921ec6d074a3e188a7c7ef95668bb95e7d44fa0e5778ec2a7afe"
 "checksum difference 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "524cbf6897b527295dff137cec09ecf3a05f4fddffd7dfcd1585403449e74198"
