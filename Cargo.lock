@@ -1520,7 +1520,7 @@ dependencies = [
 
 [[package]]
 name = "parse_duration"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2545,7 +2545,7 @@ dependencies = [
  "loopdev 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "mockito 0.20.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nix 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "parse_duration 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "parse_duration 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "quale 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2933,7 +2933,7 @@ dependencies = [
 "checksum parking_lot_core 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "94c8c7923936b28d546dfd14d4472eaf34c99b14e1c973a32b3e6d4eb04298c9"
 "checksum parking_lot_core 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cb88cb1cb3790baa6776844f968fea3be44956cf184fa1be5a03341f5491278c"
 "checksum parking_lot_core 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b876b1b9e7ac6e1a74a6da34d25c42e17e8862aa409cbbbdcfc8d86c6f3bc62b"
-"checksum parse_duration 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "ccf48818afa0ed882a34976eb2f5e2334c8905b81573bc41539f321916790c1b"
+"checksum parse_duration 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "b0331a6dea2441a1d81bcd474a701c3940c808b52a9e0c4a963c9cfebf48a2d4"
 "checksum percent-encoding 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "31010dd2e1ac33d5b46a5b413495239882813e0369f8ed8a5e266f173602f831"
 "checksum percent-encoding 2.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 "checksum pipers 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ee5fc4ee2584767241d624644f8dc720b0e4a6fa7af22cd38dfb66b05304cc26"
