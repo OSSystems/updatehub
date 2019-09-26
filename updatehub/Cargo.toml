@@ -47,6 +47,6 @@ git-version = "0.3"
 
 [dev-dependencies]
 loopdev = "0.2"
-mockito = "0.20"
+mockito = "0.21"
 pretty_assertions = "0.6"
 tempfile = "3"
