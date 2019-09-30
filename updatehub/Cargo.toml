@@ -23,7 +23,7 @@ hex = "0.3"
 infer = "0.1"
 lazy_static = "1"
 nix = "0.15"
-parse_duration = "1"
+parse_duration = "2"
 pkg-schema = { path = "../updatehub-package-schema", package = "updatehub-package-schema" }
 quale = "1"
 rand = "0.7"
