@@ -28,7 +28,7 @@ pkg-schema = { path = "../updatehub-package-schema", package = "updatehub-packag
 quale = "1"
 rand = "0.7"
 regex = "1"
-reqwest = "=0.9.17"
+reqwest = "=0.10.0"
 serde = { version = "1", features = ["rc", "derive"] }
 serde_ini = "0.2"
 serde_json = "1"
