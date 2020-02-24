@@ -3,7 +3,7 @@
 [[package]]
 name = "actix"
 version = "0.9.0"
-source = "git+https://github.com/actix/actix#9e1db1944e843053a017af56067d1b7ceec1cdec"
+source = "git+https://github.com/actix/actix#3875a297f14696e579a066c4e97c94f9046b62b0"
 dependencies = [
  "actix-http 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-rt 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
