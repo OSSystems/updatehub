@@ -566,7 +566,7 @@ dependencies = [
 [[package]]
 name = "compress-tools"
 version = "0.2.1-alpha.0"
-source = "git+https://github.com/OSSystems/compress-tools-rs.git#29da4365bc59b551f92a7a72c4a38848476dae42"
+source = "git+https://github.com/OSSystems/compress-tools-rs.git#234334afd3bfc846b38c73df1ea4d8b12af90762"
 dependencies = [
  "derive_more 0.99.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "pipers 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
