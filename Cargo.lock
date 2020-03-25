@@ -53,8 +53,6 @@ dependencies = [
  "futures",
  "http",
  "log",
- "openssl",
- "tokio-openssl",
  "trust-dns-proto",
  "trust-dns-resolver",
 ]
@@ -69,15 +67,16 @@ dependencies = [
  "actix-rt",
  "actix-service",
  "actix-threadpool",
- "actix-tls",
  "actix-utils",
  "base64",
  "bitflags",
+ "brotli2",
  "bytes",
  "copyless",
  "derive_more",
  "either",
  "encoding_rs",
+ "flate2",
  "futures-channel",
  "futures-core",
  "futures-util",
@@ -218,8 +217,6 @@ dependencies = [
  "either",
  "futures",
  "log",
- "openssl",
- "tokio-openssl",
 ]
 
 [[package]]
@@ -243,7 +240,8 @@ dependencies = [
 [[package]]
 name = "actix-web"
 version = "3.0.0-alpha.1"
-source = "git+https://github.com/actix/actix-web#206733188478f4d18df376a72fac3a4938b99bd6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80e6d4c344acb10ceb89ba0d0bb6bf67fea56cd68444b1166d78d218e0f06013"
 dependencies = [
  "actix-codec",
  "actix-http 2.0.0-alpha.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -274,13 +272,6 @@ dependencies = [
  "time 0.2.9",
  "url",
 ]
-
-[[package]]
-name = "actix-web"
-version = "3.0.0-alpha.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80e6d4c344acb10ceb89ba0d0bb6bf67fea56cd68444b1166d78d218e0f06013"
-replace = "actix-web 3.0.0-alpha.1 (git+https://github.com/actix/actix-web)"
 
 [[package]]
 name = "actix-web-codegen"
@@ -429,7 +420,6 @@ dependencies = [
  "futures-core",
  "log",
  "mime",
- "openssl",
  "percent-encoding",
  "rand",
  "serde",
@@ -514,6 +504,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fa79dedbb091f449f1f39e53edf88d5dbe95f895dae6135a8d7b881fb5af73f5"
 dependencies = [
  "byte-tools",
+]
+
+[[package]]
+name = "brotli-sys"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4445dea95f4c2b41cde57cc9fee236ae4dbae88d8fcbdb4750fc1bb5d86aaecd"
+dependencies = [
+ "cc",
+ "libc",
+]
+
+[[package]]
+name = "brotli2"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0cb036c3eade309815c15ddbacec5b22c4d1f3983a774ab2eac2e3e9ea85568e"
+dependencies = [
+ "brotli-sys",
+ "libc",
 ]
 
 [[package]]
@@ -2213,16 +2223,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-openssl"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c4b08c5f4208e699ede3df2520aca2e82401b2de33f45e96696a074480be594"
-dependencies = [
- "openssl",
- "tokio",
-]
-
-[[package]]
 name = "tokio-util"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2333,7 +2333,7 @@ version = "0.1.0"
 dependencies = [
  "actix",
  "actix-rt",
- "actix-web 3.0.0-alpha.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "actix-web",
  "argh",
  "async-trait",
  "awc 2.0.0-alpha.1 (registry+https://github.com/rust-lang/crates.io-index)",
