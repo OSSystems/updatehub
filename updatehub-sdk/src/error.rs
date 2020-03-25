@@ -15,17 +15,8 @@ pub enum Error {
     AbortDownloadRefused(crate::api::abort_download::Refused),
 
     #[error("Unexpected response: {0:?}")]
-    UnexpectedResponse(awc::http::StatusCode),
+    UnexpectedResponse(reqwest::Response),
 
-    #[error(transparent)]
-    ConnectError(#[from] awc::error::ConnectError),
-
-    #[error(transparent)]
-    SendRequestError(#[from] awc::error::SendRequestError),
-
-    #[error(transparent)]
-    PayloadError(#[from] awc::error::PayloadError),
-
-    #[error(transparent)]
-    JsonPayloadError(#[from] awc::error::JsonPayloadError),
+    #[error("Client error: {0}")]
+    ClientError(#[from] reqwest::Error),
 }
