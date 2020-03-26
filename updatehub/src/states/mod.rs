@@ -52,10 +52,10 @@ pub enum TransitionError {
     MpscRecv(mpsc::TryRecvError),
 
     #[error("Failed to download: {0}")]
-    ActixPayload(#[from] awc::error::PayloadError),
+    ActixPayload(#[from] actix_web::error::PayloadError),
 
     #[error(transparent)]
-    HttpValueToStr(#[from] awc::http::header::ToStrError),
+    HttpValueToStr(#[from] actix_web::http::header::ToStrError),
 
     #[error(transparent)]
     ParseInt(#[from] std::num::ParseIntError),
@@ -96,8 +96,8 @@ pub enum TransitionError {
     Process(#[from] easy_process::Error),
 }
 
-impl From<awc::error::SendRequestError> for TransitionError {
-    fn from(err: awc::error::SendRequestError) -> Self {
+impl From<actix_web::client::SendRequestError> for TransitionError {
+    fn from(err: actix_web::client::SendRequestError) -> Self {
         TransitionError::SendRequest(format!("{}", err))
     }
 }

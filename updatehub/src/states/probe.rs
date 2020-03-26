@@ -38,7 +38,7 @@ impl StateChangeImpl for State<Probe> {
             .probe(&shared_state.runtime_settings, &shared_state.firmware)
             .await
         {
-            Err(client::Error::Http(e)) if e.is::<awc::http::uri::InvalidUri>() => {
+            Err(client::Error::Http(e)) if e.is::<actix_web::client::InvalidUrl>() => {
                 return Err(client::Error::Http(e).into());
             }
             Err(e) => {

@@ -6,7 +6,7 @@ use super::{
     actor::{self, SharedState},
     PrepareLocalInstall, Result, State, StateChangeImpl, StateMachine, TransitionError,
 };
-use awc::http::header;
+use actix_web::http::header;
 use slog_scope::{debug, error, info};
 use std::str::FromStr;
 use tokio::{io::AsyncWriteExt, stream::StreamExt};
@@ -29,7 +29,7 @@ impl StateChangeImpl for State<DirectDownload> {
         info!("Fetching update package directly from url: {:?}", self.0.url);
 
         let update_file = shared_state.settings.update.download_dir.join("fetched_pkg");
-        let mut response = awc::Client::new().get(&self.0.url).send().await?;
+        let mut response = actix_web::client::Client::new().get(&self.0.url).send().await?;
 
         let length = usize::from_str(
             response

@@ -7,12 +7,12 @@ use crate::{
     runtime_settings::RuntimeSettings,
     update_package::{Signature, UpdatePackage},
 };
-use awc::{
+use actix_web::{
+    client::{Client, ClientBuilder},
     http::{
         header::{self, HeaderName, CONTENT_TYPE, RANGE, USER_AGENT},
         StatusCode,
     },
-    Client, ClientBuilder,
 };
 use sdk::api::info::firmware as api;
 use serde::Serialize;
@@ -53,30 +53,30 @@ pub enum Error {
     Io(#[from] std::io::Error),
 
     #[error(transparent)]
-    ConnectError(#[from] awc::error::ConnectError),
+    ConnectError(#[from] actix_web::client::ConnectError),
 
     #[error("Send Request Error: {0}")]
     SendRequestError(String),
 
     #[error(transparent)]
-    Http(awc::error::HttpError),
+    Http(actix_web::http::Error),
 
     #[error(transparent)]
-    PayloadError(#[from] awc::error::PayloadError),
+    PayloadError(#[from] actix_web::error::PayloadError),
 
     #[error(transparent)]
-    JsonPayloadError(#[from] awc::error::JsonPayloadError),
+    JsonPayloadError(#[from] actix_web::error::JsonPayloadError),
 
     #[error("Invalid header error: {0}")]
-    InvalidHeader(#[from] awc::http::header::InvalidHeaderValue),
+    InvalidHeader(#[from] actix_web::http::header::InvalidHeaderValue),
 
     #[error("Non str header error: {0}")]
-    NonStrHeader(#[from] awc::http::header::ToStrError),
+    NonStrHeader(#[from] actix_web::http::header::ToStrError),
 }
 
-impl From<awc::error::SendRequestError> for Error {
-    fn from(err: awc::error::SendRequestError) -> Self {
-        if let awc::error::SendRequestError::Http(err) = err {
+impl From<actix_web::client::SendRequestError> for Error {
+    fn from(err: actix_web::client::SendRequestError) -> Self {
+        if let actix_web::client::SendRequestError::Http(err) = err {
             return Error::Http(err);
         }
         Error::SendRequestError(format!("{}", err))
