@@ -7,6 +7,7 @@ use testcontainers::{
     images::generic::{GenericImage, WaitFor},
     Container, Docker, Image,
 };
+
 use updatehub_sdk as sdk;
 
 struct MockServer {

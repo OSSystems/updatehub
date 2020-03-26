@@ -82,6 +82,9 @@ pub enum TransitionError {
 
     #[error("Process error: {0}")]
     Process(#[from] easy_process::Error),
+
+    #[error("Client error: {0}")]
+    Attohttpc(#[from] attohttpc::Error),
 }
 
 #[async_trait(?Send)]

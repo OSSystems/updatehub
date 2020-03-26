@@ -15,8 +15,8 @@ pub enum Error {
     AbortDownloadRefused(crate::api::abort_download::Refused),
 
     #[error("Unexpected response: {0:?}")]
-    UnexpectedResponse(reqwest::Response),
+    UnexpectedResponse(attohttpc::Response),
 
     #[error("Client error: {0}")]
-    ClientError(#[from] reqwest::Error),
+    ClientError(#[from] attohttpc::Error),
 }
