@@ -12,10 +12,10 @@ mod error;
 pub(crate) mod install;
 mod park;
 mod poll;
-mod prepare_download;
 mod prepare_local_install;
 mod probe;
 mod reboot;
+mod start_download;
 mod validation;
 
 #[cfg(test)]
@@ -23,9 +23,8 @@ mod tests;
 
 use self::{
     direct_download::DirectDownload, download::Download, entry_point::EntryPoint, error::Error,
-    install::Install, park::Park, poll::Poll, prepare_download::PrepareDownload,
-    prepare_local_install::PrepareLocalInstall, probe::Probe, reboot::Reboot,
-    validation::Validation,
+    install::Install, park::Park, poll::Poll, prepare_local_install::PrepareLocalInstall,
+    probe::Probe, reboot::Reboot, start_download::StartDownload, validation::Validation,
 };
 use crate::{
     firmware::{self, Metadata, Transition},
@@ -124,7 +123,7 @@ enum StateMachine {
     Poll(State<Poll>),
     Probe(State<Probe>),
     Validation(State<Validation>),
-    PrepareDownload(State<PrepareDownload>),
+    StartDownload(State<StartDownload>),
     DirectDownload(State<DirectDownload>),
     PrepareLocalInstall(State<PrepareLocalInstall>),
     Download(State<Download>),
@@ -246,7 +245,7 @@ impl StateMachine {
             StateMachine::Poll(s) => s.handle(shared_state).await,
             StateMachine::Probe(s) => s.handle(shared_state).await,
             StateMachine::Validation(s) => s.handle(shared_state).await,
-            StateMachine::PrepareDownload(s) => s.handle(shared_state).await,
+            StateMachine::StartDownload(s) => s.handle(shared_state).await,
             StateMachine::DirectDownload(s) => s.handle(shared_state).await,
             StateMachine::PrepareLocalInstall(s) => s.handle(shared_state).await,
             StateMachine::Download(s) => {
@@ -272,7 +271,7 @@ impl StateMachine {
             StateMachine::Poll(s) => f(s),
             StateMachine::Probe(s) => f(s),
             StateMachine::Validation(s) => f(s),
-            StateMachine::PrepareDownload(s) => f(s),
+            StateMachine::StartDownload(s) => f(s),
             StateMachine::DirectDownload(s) => f(s),
             StateMachine::PrepareLocalInstall(s) => f(s),
             StateMachine::Download(s) => f(s),

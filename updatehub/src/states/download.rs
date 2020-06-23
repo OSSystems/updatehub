@@ -106,7 +106,7 @@ mod test {
             Metadata,
         },
         runtime_settings::RuntimeSettings,
-        states::PrepareDownload,
+        states::StartDownload,
         update_package::tests::{create_fake_settings, get_update_package_with_shasum},
         utils,
     };
@@ -124,7 +124,7 @@ mod test {
         (vec, shasum)
     }
 
-    fn fake_download_state(shasum: &str) -> (State<PrepareDownload>, SharedState) {
+    fn fake_download_state(shasum: &str) -> (State<StartDownload>, SharedState) {
         let settings = create_fake_settings();
         let tmpdir = settings.update.download_dir.clone();
         let _ = create_dir_all(&tmpdir);
@@ -134,7 +134,7 @@ mod test {
         let firmware = Metadata::from_path(&create_fake_metadata(FakeDevice::NoUpdate)).unwrap();
 
         (
-            State(PrepareDownload { update_package: get_update_package_with_shasum(shasum) }),
+            State(StartDownload { update_package: get_update_package_with_shasum(shasum) }),
             SharedState { settings, runtime_settings, firmware },
         )
     }
@@ -149,7 +149,7 @@ mod test {
 
         cloud_mock::set_download_data(obj);
 
-        let mut machine = StateMachine::PrepareDownload(predownload_state)
+        let mut machine = StateMachine::StartDownload(predownload_state)
             .move_to_next_state(&mut shared_state)
             .await
             .unwrap()

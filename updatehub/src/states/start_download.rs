@@ -14,14 +14,14 @@ use crate::{
 use slog_scope::error;
 
 #[derive(Debug, PartialEq)]
-pub(super) struct PrepareDownload {
+pub(super) struct StartDownload {
     pub(super) update_package: UpdatePackage,
 }
 
 #[async_trait::async_trait(?Send)]
-impl StateChangeImpl for State<PrepareDownload> {
+impl StateChangeImpl for State<StartDownload> {
     fn name(&self) -> &'static str {
-        "prepare_download"
+        "start_download"
     }
 
     fn is_handling_download(&self) -> bool {

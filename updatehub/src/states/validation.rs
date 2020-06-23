@@ -4,7 +4,7 @@
 
 use super::{
     actor::{self, SharedState},
-    EntryPoint, PrepareDownload, Result, State, StateChangeImpl, StateMachine,
+    EntryPoint, Result, StartDownload, State, StateChangeImpl, StateMachine,
 };
 use crate::update_package::UpdatePackageExt;
 use slog_scope::{debug, error, info, trace};
@@ -57,9 +57,9 @@ impl StateChangeImpl for State<Validation> {
             info!("not downloading update package, the same package has already been installed.");
             Ok((StateMachine::EntryPoint(self.into()), actor::StepTransition::Immediate))
         } else {
-            trace!("moving to PrepareDownload state to process the update package.");
+            trace!("moving to StartDownload state to process the update package.");
             Ok((
-                StateMachine::PrepareDownload(State(PrepareDownload {
+                StateMachine::StartDownload(State(StartDownload {
                     update_package: self.0.package,
                 })),
                 actor::StepTransition::Immediate,
@@ -101,7 +101,7 @@ mod tests {
             .await
             .unwrap()
             .0;
-        assert_state!(machine, PrepareDownload);
+        assert_state!(machine, StartDownload);
     }
 
     #[actix_rt::test]

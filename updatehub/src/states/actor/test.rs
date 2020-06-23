@@ -129,9 +129,9 @@ async fn download_abort() {
     addr.send(Step).await.unwrap(); // Idle -> Poll
     addr.send(Step).await.unwrap(); // Poll -> Probe
     addr.send(Step).await.unwrap(); // Probe -> Validation
-    addr.send(Step).await.unwrap(); // Validation -> PrepareDownload
+    addr.send(Step).await.unwrap(); // Validation -> StartDownload
     let res = addr.send(info::Request).await.unwrap();
-    assert_eq!(res.state, "prepare_download");
+    assert_eq!(res.state, "start_download");
 
     addr.send(download_abort::Request).await.unwrap();
     let res = addr.send(info::Request).await.unwrap();
