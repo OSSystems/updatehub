@@ -41,6 +41,7 @@ pub async fn get<W>(url: &str, handle: &mut W) -> Result<()>
 where
     W: io::Write + Unpin,
 {
+    validate_url(url)?;
     let req = surf::get(url);
     save_body_to(req, handle).await
 }
@@ -92,6 +93,8 @@ impl<'a> Client<'a> {
         num_retries: u64,
         firmware: api::FirmwareMetadata<'_>,
     ) -> Result<api::ProbeResponse> {
+        validate_url(self.server)?;
+
         let mut response = self
             .client
             .post(&format!("{}/upgrades", &self.server))
@@ -130,6 +133,8 @@ impl<'a> Client<'a> {
         download_dir: &Path,
         object: &str,
     ) -> Result<()> {
+        validate_url(self.server)?;
+
         // FIXME: Discuss the need of packages inside the route
         let mut request = self
             .client
@@ -168,6 +173,8 @@ impl<'a> Client<'a> {
         error_message: Option<String>,
         current_log: Option<String>,
     ) -> Result<()> {
+        validate_url(self.server)?;
+
         #[derive(serde::Serialize)]
         #[serde(rename_all = "kebab-case")]
         struct Payload<'a> {
@@ -209,4 +216,9 @@ impl TryFrom<&headers::HeaderValues> for api::Signature {
 
         Ok(Self::from_base64_str(value)?)
     }
+}
+
+fn validate_url(url: &str) -> surf::Result<()> {
+    surf::http::Url::parse(url)?;
+    Ok(())
 }
