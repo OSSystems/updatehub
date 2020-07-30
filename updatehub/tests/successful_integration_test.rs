@@ -5,7 +5,7 @@
 use common::{
     create_mock_server, format_output_client_log, format_output_server, get_output_server,
     remove_carriage_newline_caracters, remove_whitespaces, run_client_log, run_client_probe,
-    FakeServer, Polling, Server, Settings,
+    CheckReqTest, FakeServer, Polling, Server, Settings,
 };
 
 pub mod common;
@@ -282,7 +282,10 @@ fn correct_config_update_no_polling_probe_api() {
     let setup = Settings::default();
 
     let (mut session, setup) = setup.timeout(300).init_server();
-    let mocks = create_mock_server(FakeServer::HasUpdate(setup.firmware.data.product_uid.clone()));
+    let mocks = create_mock_server(FakeServer::HasUpdate(
+        setup.firmware.data.product_uid.clone(),
+        CheckReqTest::Disable,
+    ));
     let output_server_1 = get_output_server(&mut session, Polling::Disable);
 
     let output_client = run_client_probe(Server::Standard);
@@ -293,7 +296,7 @@ fn correct_config_update_no_polling_probe_api() {
     let (output_server_trce_2, output_server_info_2) = format_output_server(output_server_2);
     let output_server_info_2 = remove_whitespaces(
         output_server_info_2,
-        FakeServer::HasUpdate(setup.firmware.data.product_uid.clone()),
+        FakeServer::HasUpdate(setup.firmware.data.product_uid.clone(), CheckReqTest::Disable),
     );
 
     insta::assert_snapshot!(output_server_info_1, @r###"

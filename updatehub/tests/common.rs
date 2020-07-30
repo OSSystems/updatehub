@@ -9,7 +9,12 @@ use std::{env, path::PathBuf};
 
 pub enum FakeServer {
     NoUpdate,
-    HasUpdate(String),
+    HasUpdate(String, CheckReqTest),
+}
+
+pub enum CheckReqTest {
+    Enable,
+    Disable,
 }
 
 pub enum Polling {
@@ -168,6 +173,35 @@ pub fn create_mock_server(server: FakeServer) -> Vec<Mock> {
         ]
     });
 
+    let wrong_json_update = json!({
+        "product": "0123456789",
+        "version": "1.2",
+        "supported-hardware": ["board"],
+        "objects":
+        [
+            [
+                {
+                    "mode": "test",
+                    "filename": "testfile",
+                    "target": "/dev/device1",
+                    "sha256sum": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+                    "size": 4,
+                    "check_req" : true
+                }
+            ],
+            [
+                {
+                    "mode": "test",
+                    "filename": "testfile",
+                    "target": "/dev/device2",
+                    "sha256sum": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+                    "size": 4,
+                    "check_req" : true
+                }
+            ]
+        ]
+    });
+
     let request_body = Matcher::Json(json!({
         "product-uid": "229ffd7e08721d716163fc81a2dbaf6c90d449f0a3b009b6a2defe8a0b0d7381",
         "version": "1.1",
@@ -191,14 +225,18 @@ pub fn create_mock_server(server: FakeServer) -> Vec<Mock> {
                 .with_status(404)
                 .create(),
         ],
-        FakeServer::HasUpdate(product_uid) => vec![
+        FakeServer::HasUpdate(product_uid, check_req_test) => vec![
             mock("POST", "/upgrades")
                 .match_header("Content-Type", "application/json")
                 .match_header("Api-Content-Type", "application/vnd.updatehub-v1+json")
                 .match_body(request_body)
                 .with_status(200)
                 .with_header("UH-Signature", &openssl::base64::encode_block(b"some_signature"))
-                .with_body(&json_update.to_string())
+                .with_body(&match check_req_test {
+                    CheckReqTest::Disable => json_update.to_string(),
+                    CheckReqTest::Enable => wrong_json_update.to_string(),
+                    }
+                )
                 .create(),
             mock(
                 "GET",
@@ -265,6 +303,6 @@ pub fn format_output_client_log(s: String) -> String {
 pub fn remove_whitespaces(s: String, server: FakeServer) -> String {
     match server {
         FakeServer::NoUpdate => s.replace("\n\n\n", ""),
-        FakeServer::HasUpdate(_) => s.replace("\n\n\n\n\n", ""),
+        FakeServer::HasUpdate(..) => s.replace("\n\n\n\n\n", ""),
     }
 }
